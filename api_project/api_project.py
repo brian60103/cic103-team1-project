@@ -154,7 +154,7 @@ async def api_remove_user_from_groups(username: str):
 
 
 
-@awsHandler.put("/permission/{username}/{newgroup}")
+@awsHandler.put("/permission/{username}/{new_group_name}")
 async def api_add_user_to_a_group(username: str, new_group_name: str):
     """App Runner 的處理函式."""
     result = add_user_to_a_group(username, new_group_name)
