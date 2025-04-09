@@ -1,3 +1,9 @@
+"""
+© 2025 Brian Liu(brian60103). All rights reserved.
+
+This project is licensed under the MIT License.
+"""
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime, timedelta
