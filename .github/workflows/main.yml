@@ -1,0 +1,51 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          # ECR repository URI
+          ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com
+          IMAGE1_NAME=api_hw  # image1 name
+          IMAGE2_NAME=api_project  # image2 name
+          TAG=${{ github.sha }}  # use commit sha for tag
+
+          docker build -t $IMAGE1_NAME:$TAG ./api_hw
+          docker tag $IMAGE1_NAME:$TAG $ECR_REGISTRY/$IMAGE1_NAME:$TAG
+
+          docker build -t $IMAGE2_NAME:$TAG ./api_project
+          docker tag $IMAGE2_NAME:$TAG $ECR_REGISTRY/$IMAGE2_NAME:$TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com
+          IMAGE1_NAME=api_hw  # image1 name
+          IMAGE2_NAME=api_project  # image2 name
+          TAG=${{ github.sha }}  # use commit sha for tag
+
+          docker push $ECR_REGISTRY/$IMAGE1_NAME:$TAG
+          docker push $ECR_REGISTRY/$IMAGE2_NAME:$TAG
+
+
+          
